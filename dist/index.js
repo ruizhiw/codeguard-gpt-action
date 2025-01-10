@@ -214,9 +214,11 @@ const octokit = new action_1.Octokit();
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
+            core.debug("Start Running gpt action");
             const extensions = core.getInput('extensions').split(',');
             const pullNumber = parseInt(core.getInput('number'));
             const [owner, repo] = process.env.GITHUB_REPOSITORY.split('/');
+            core.debug(`Owner: ${owner}, Repo: ${repo}`);
             const files = yield octokit.request(`GET /repos/${owner}/${repo}/pulls/${pullNumber}/files`);
             core.debug(`Files: ${files.data}`);
             for (const file of files.data) {
