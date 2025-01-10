@@ -218,9 +218,11 @@ function run() {
             const pullNumber = parseInt(core.getInput('number'));
             const [owner, repo] = process.env.GITHUB_REPOSITORY.split('/');
             const files = yield octokit.request(`GET /repos/${owner}/${repo}/pulls/${pullNumber}/files`);
+            core.debug(`Files: ${files.data}`);
             for (const file of files.data) {
                 const extension = file.filename.split('.').pop();
                 if (extensions.includes(extension)) {
+                    core.debug(`File.raw_url: $${file.raw_url}`);
                     const text = yield (0, client_1.getRawFileContent)(file.raw_url);
                     const textWithLineNumber = (0, utils_1.addLineNumbers)(text);
                     if (process.env.CODEGUARD_COMMENT_BY_LINE) {
@@ -257,7 +259,7 @@ run();
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.promptForJson = exports.promptForText = void 0;
 function promptForText(fileName, sourceCodeWithLineNumber) {
-    return `Act as a code guard that has deep knowledge of frontend software development, you will review the pull request files change below for a project is written in Typescript. Always start your suggestions with 'As a codeguard, here are my suggestions' and mention file name. Please provide suggestions for making the code more readable, maintainable and secure, mentioning line numbers with each suggestion and only provide suggestions and one line code snippets corresponding to those lines of suggestion:
+    return `Act as a code guard that has deep knowledge of software development, you will review the pull request files change below for a project is written in Typescript. Always start your suggestions with 'As a codeguard, here are my suggestions' and mention file name. Please provide suggestions for making the code more readable, maintainable and secure, mentioning line numbers with each suggestion and only provide suggestions and one line code snippets corresponding to those lines of suggestion:
     ${fileName}
     \`\`\`ts
     ${sourceCodeWithLineNumber}
@@ -265,7 +267,7 @@ function promptForText(fileName, sourceCodeWithLineNumber) {
 }
 exports.promptForText = promptForText;
 function promptForJson(sourceCodeWithLineNumber, linesToReview) {
-    return `Act as a code guard with deep knowledge of frontend software development, review the code below for a project written in TypeScript.
+    return `Act as a code guard with deep knowledge of software development, review the code below for a project written in TypeScript.
     \`\`\`ts
     ${sourceCodeWithLineNumber}
     \`\`\`
