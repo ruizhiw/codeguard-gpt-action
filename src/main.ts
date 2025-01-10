@@ -15,10 +15,12 @@ const octokit = new Octokit()
 
 async function run(): Promise<void> {
   try {
+    core.debug("Start Running gpt action")
     const extensions = core.getInput('extensions').split(',')
 
     const pullNumber = parseInt(core.getInput('number'))
     const [owner, repo] = process.env.GITHUB_REPOSITORY!.split('/')
+    core.debug(`Owner: ${owner}, Repo: ${repo}`)
 
     const files = await octokit.request(
       `GET /repos/${owner}/${repo}/pulls/${pullNumber}/files`
