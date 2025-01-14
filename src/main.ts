@@ -12,7 +12,7 @@ import {
 
 const octokit = new Octokit()
 
-export async function run(): Promise<void> {
+async function run(): Promise<void> {
   try {
     core.debug("Start Running gpt action")
     const extensions = core.getInput('extensions').split(',')
