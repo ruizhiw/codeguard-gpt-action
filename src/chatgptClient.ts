@@ -23,9 +23,10 @@ export async function sendPostRequest(options: SendPostRequestOptions = {}): Pro
         })
         let response = ''
         for await (const part of responseGenerator) {
-            response += part
+            response += part.message.content
 
         }
+        core.debug(`Response: ${response}`)
         return response
     } catch (error) {
         core.error(JSON.stringify(error, null, 2))
@@ -44,7 +45,7 @@ export async function getSuggestions(
   })
 
   // extract the json from the response
-  const result = response?.message?.content?.parts[0] ?? ''
+  const result = response
   const startIndex = result.indexOf('{')
   const endIndex = result.lastIndexOf('}')
   const json =
@@ -57,7 +58,7 @@ export async function getSuggestions(
     suggestions = JSON.parse(json)
   } catch (err) {
     throw new Error(
-      `ChatGPT response is not a valid json:\n ${response.message.content.parts[0]}`
+      `ChatGPT response is not a valid json:\n ${response}`
     )
   }
   return suggestions
