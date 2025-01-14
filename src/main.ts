@@ -1,14 +1,14 @@
 /* eslint-disable sort-imports */
 import * as core from '@actions/core'
 import {Octokit} from '@octokit/action'
-import {getRawFileContent, postCommentToPR, processSuggestions} from './client'
-import {getSuggestions, sendPostRequest} from './chatgptClient'
-import {promptForText} from './prompt'
+import {getRawFileContent, postCommentToPR, processSuggestions} from './client.js'
+import {getSuggestions, sendPostRequest} from './chatgptClient.js'
+import {promptForText} from './prompt.js'
 import {
   addLineNumbers,
   getChangedLineNumbers,
   validateSuggestions
-} from './utils'
+} from './utils.js'
 
 const octokit = new Octokit()
 

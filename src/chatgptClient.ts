@@ -1,8 +1,8 @@
 /* eslint-disable filenames/match-regex */
 /* eslint-disable sort-imports */
 import ollama from 'ollama'
-import {promptForJson} from './prompt'
-import {Suggestions} from './utils'
+import {promptForJson} from './prompt.js'
+import {Suggestions} from './utils.js'
 import * as core from '@actions/core'
 
 process.env.OLLAMA_URL = 'https://origin-discovery-reco-bastion.preprod.hotstar-labs.com'
