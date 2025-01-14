@@ -1,9 +1,8 @@
 /* eslint-disable sort-imports */
 import * as core from '@actions/core'
 import {Octokit} from '@octokit/action'
-import {sendPostRequest} from 'chatgpt-plus-api-client'
 import {getRawFileContent, postCommentToPR, processSuggestions} from './client'
-import {getSuggestions} from './chatgptClient'
+import {getSuggestions, sendPostRequest} from './chatgptClient'
 import {promptForText} from './prompt'
 import {
   addLineNumbers,
@@ -13,7 +12,7 @@ import {
 
 const octokit = new Octokit()
 
-async function run(): Promise<void> {
+export async function run(): Promise<void> {
   try {
     core.debug("Start Running gpt action")
     const extensions = core.getInput('extensions').split(',')
