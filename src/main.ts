@@ -1,6 +1,7 @@
 /* eslint-disable sort-imports */
 import * as core from '@actions/core'
 import {Octokit} from '@octokit/action'
+import fetch from 'node-fetch'
 import {getRawFileContent, postCommentToPR, processSuggestions} from './client.js'
 import {getSuggestions, sendPostRequest} from './chatgptClient.js'
 import {promptForText} from './prompt.js'
@@ -10,7 +11,11 @@ import {
   validateSuggestions
 } from './utils.js'
 
-const octokit = new Octokit()
+const octokit = new Octokit({
+  request: {
+    fetch
+  }
+})
 
 async function run(): Promise<void> {
   try {
@@ -35,6 +40,7 @@ async function run(): Promise<void> {
         const textWithLineNumber = addLineNumbers(text!)
         if (process.env.CODEGUARD_COMMENT_BY_LINE) {
           const changedLines = getChangedLineNumbers(file.patch)
+          core.debug(`file.patch: ${file.patch}`)
 
           const suggestions = await getSuggestions(
             textWithLineNumber,

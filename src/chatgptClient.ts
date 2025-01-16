@@ -4,8 +4,10 @@ import ollama from 'ollama'
 import {promptForJson} from './prompt.js'
 import {Suggestions} from './utils.js'
 import * as core from '@actions/core'
+import fetch from "node-fetch"
+import { ReadableStream } from 'web-streams-polyfill'
 
-process.env.OLLAMA_URL = 'https://origin-discovery-reco-bastion.preprod.hotstar-labs.com'
+const url = 'https://origin-discovery-reco-bastion.preprod.hotstar-labs.com/api/chat'
 type SendPostRequestOptions = {
   prompt?: string;
   model?: string;
@@ -13,23 +15,38 @@ type SendPostRequestOptions = {
 
 export async function sendPostRequest(options: SendPostRequestOptions = {}): Promise<any> {
     try {
-        const responseGenerator = await ollama.chat({
+        const response = await fetch(url, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
             "model": options.model || "llama3.2",
             "messages": [{
                 "role": "user",
                 "content": options.prompt || ""
             }],
             "stream": true
+            })
         })
-        let response = ''
-        for await (const part of responseGenerator) {
-            response += part.message.content
-
+        if (!response.body) {
+            throw new Error('No response body');
         }
-        core.debug(`Response: ${response}`)
-        return response
+
+        const reader = response.body.getReader()
+        const decoder = new TextDecoder();
+        let result = '';
+
+        while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            result += decoder.decode(value, { stream: true });
+        }
+
+        core.debug(`Response: ${result}`);
+        return result
     } catch (error) {
-        core.error(JSON.stringify(error, null, 2))
+        core.error(`Error during ollama.chat call: ${error instanceof Error ? error.message : JSON.stringify(error, null, 2)}`)
     }
 }
 
@@ -37,6 +54,7 @@ export async function getSuggestions(
   textWithLineNumber: string,
   linesToReview: {start: number; end: number}[]
 ): Promise<Suggestions> {
+    core.debug(`Lines to review: start: ${linesToReview[0].start}, end: ${linesToReview[0].end}`)
   const response = await sendPostRequest({
     prompt: promptForJson(
       textWithLineNumber,
@@ -46,6 +64,7 @@ export async function getSuggestions(
 
   // extract the json from the response
   const result = response
+    core.debug(`Result: ${result}`)
   const startIndex = result.indexOf('{')
   const endIndex = result.lastIndexOf('}')
   const json =
