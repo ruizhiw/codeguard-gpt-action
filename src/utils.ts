@@ -1,3 +1,5 @@
+import * as core from '@actions/core'
+
 export function addLineNumbers(text: string): string {
   const lines = text.split('\n')
   let result = ''
@@ -25,9 +27,12 @@ export function getChangedLineNumbers(
   const changedLineNumbers: {start: number; end: number}[] = []
   for (const line of lines) {
     if (line.startsWith('@@')) {
-      const match = line.match(/@@ \\-(\d+),(\d+) \+(\d+),(\d+) @@/)
+      core.debug(`Line: ${line}`)
+      const match = line.match(/@@ \-(\d+),(\d+) \+(\d+),(\d+) @@/)
+      core.debug(`Match: ${match}`)
       if (match) {
         const [, , , newStart, newLength] = match
+        core.debug(`New start: ${newStart}, New length: ${newLength}`)
         changedLineNumbers.push({
           start: +newStart,
           end: +newStart + +newLength - 1

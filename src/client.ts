@@ -2,7 +2,7 @@
 import * as core from '@actions/core'
 import {Octokit} from '@octokit/action'
 import fetch from 'node-fetch'
-import {extractCommitHash, Suggestions} from './utils'
+import {extractCommitHash, Suggestions} from './utils.js'
 
 export async function getRawFileContent(
   url: string
