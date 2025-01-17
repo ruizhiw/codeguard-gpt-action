@@ -32,6 +32,7 @@
     "chatgpt-plus-api-client": "1.0.14",
     "node-fetch": "^3.3.0",
     "ollama": "^0.5.12",
+    "web-streams-polyfill": "^4.1.0",
     "xhr2": "^0.2.1"
   },
   "devDependencies": {

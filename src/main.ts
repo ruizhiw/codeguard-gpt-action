@@ -29,18 +29,15 @@ async function run(): Promise<void> {
     const files = await octokit.request(
       `GET /repos/${owner}/${repo}/pulls/${pullNumber}/files`
     )
-    core.debug(`Files: ${files.data}`)
 
     for (const file of files.data) {
       const extension = file.filename.split('.').pop()
 
       if (extensions.includes(extension)) {
-        core.debug(`File.raw_url: $${file.raw_url}`)
         const text = await getRawFileContent(file.raw_url)
         const textWithLineNumber = addLineNumbers(text!)
         if (process.env.CODEGUARD_COMMENT_BY_LINE) {
           const changedLines = getChangedLineNumbers(file.patch)
-          core.debug(`file.patch: ${file.patch}`)
 
           const suggestions = await getSuggestions(
             textWithLineNumber,
